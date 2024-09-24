@@ -4,7 +4,8 @@ INCS	= -I./libft -I./includes
 SRC_DIR = ./src
 SRC		+= $(addprefix $(SRC_DIR)/, \
 						main.c \
-						utils.c \
+						nm.c \
+						checkers.c \
 						)
 OBJ		= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 OBJ_DIR = ./obj

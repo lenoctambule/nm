@@ -12,8 +12,12 @@
 
 typedef struct stat t_stat;
 
+int     check_ehdr_ident(char *bytes, int *elfclass);
+int     check_ehdr_common(uint16_t e_type,
+                        uint16_t e_machine,
+                        uint32_t e_version);
+
 void    print_error(char *file, char *message);
-int     check_header(char *bytes, int *elfclass);
 void    handle_path(char *path);
 
 #endif
