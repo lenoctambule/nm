@@ -8,7 +8,10 @@
 # include <errno.h>
 # include <stdio.h>
 # include <elf.h>
+# include <sys/mman.h>
 
 typedef struct stat t_stat;
+
+int check_header(char *bytes, int *elfclass);
 
 #endif

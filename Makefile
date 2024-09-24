@@ -3,7 +3,9 @@ FLAGS	= -Wall -Wextra -Werror -MMD -g
 INCS	= -I./libft -I./includes
 SRC_DIR = ./src
 SRC		+= $(addprefix $(SRC_DIR)/, \
-						main.c)
+						main.c \
+						utils.c \
+						)
 OBJ		= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 OBJ_DIR = ./obj
 NAME	= nm
@@ -30,7 +32,6 @@ libft/libft.a :
 
 clean :
 	rm -rf ./obj
-	make -C ./libft fclean
 
 fclean : clean
 	rm -f $(NAME)
