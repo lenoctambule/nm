@@ -12,6 +12,8 @@
 
 typedef struct stat t_stat;
 
-int check_header(char *bytes, int *elfclass);
+void    print_error(char *file, char *message);
+int     check_header(char *bytes, int *elfclass);
+void    handle_path(char *path);
 
 #endif
