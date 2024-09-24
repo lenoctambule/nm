@@ -1,16 +1,5 @@
 # include "nm.h"
 
-void    print_error(char *file, char *message)
-{
-    (void) file; (void) message;
-    ft_putstr_fd("'", 2);
-    ft_putstr_fd(file, 2);
-    ft_putstr_fd("' : ", 2);
-    ft_putstr_fd(message, 2);
-    ft_putstr_fd("\n", 2);
-}
-
-
 void    handle_path(char *path)
 {
     t_file  file;
@@ -31,5 +20,7 @@ void    handle_path(char *path)
     if (!check_ehdr_ident(file.filemap, &file.elfclass))
         return print_error(path, "File format is not recognized");
     if (file.elfclass == ELFCLASS32)
-        cast_32_to_64(&file);
+        parse32(&file);
+    else
+        parse64(&file);
 }

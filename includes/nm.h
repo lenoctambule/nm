@@ -22,7 +22,8 @@ typedef struct s_file {
     Elf32_Ehdr  ehdr32;
 } t_file;
 
-void    cast_32_to_64(t_file *file);
+void    parse32(t_file *file);
+void    parse64(t_file *file);
 
 int     check_ehdr_ident(char *bytes, int *elfclass);
 int     check_ehdr_common(uint16_t e_type,
