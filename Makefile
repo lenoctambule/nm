@@ -6,6 +6,7 @@ SRC		+= $(addprefix $(SRC_DIR)/, \
 						main.c \
 						nm.c \
 						checkers.c \
+						utils.c \
 						)
 OBJ		= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 OBJ_DIR = ./obj

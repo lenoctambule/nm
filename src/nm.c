@@ -10,41 +10,26 @@ void    print_error(char *file, char *message)
     ft_putstr_fd("\n", 2);
 }
 
+
 void    handle_path(char *path)
 {
+    t_file  file;
 
-    int     fd;
-    t_stat  s;
-    void    *filemap;
-    int     elfclass = ELFCLASSNONE;
-
-
-    fd  = open(path, O_RDONLY);
-    if (fd == -1)
+    file.fd  = open(path, O_RDONLY);
+    if (file.fd == -1)
         return print_error(path, strerror(errno));
-    if (fstat(fd, &s) == -1)
+    if (fstat(file.fd, &file.s) == -1)
         return print_error(path, strerror(errno));
-    if (!S_ISREG(s.st_mode))
+    if (!S_ISREG(file.s.st_mode))
         return print_error(path, "Is a directory");
-    if (s.st_size <= 64)
+    if (file.s.st_size <= 64)
         return print_error(path, "File format is not recognized");
-    filemap = mmap(NULL, s.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    if (filemap == MAP_FAILED)
+    file.filemap = mmap(NULL, file.s.st_size, PROT_READ,
+                        MAP_PRIVATE, file.fd, 0);
+    if (file.filemap == MAP_FAILED)
         return print_error(path, strerror(errno));
-    if (!check_ehdr_ident(filemap, &elfclass))
+    if (!check_ehdr_ident(file.filemap, &file.elfclass))
         return print_error(path, "File format is not recognized");
-    if (elfclass == ELFCLASS64)
-    {
-        Elf64_Ehdr  hdr = *(Elf64_Ehdr *)filemap;
-
-        if (!check_ehdr_common(hdr.e_type, hdr.e_machine, hdr.e_version))
-            return print_error(path, "File format is not recognized");
-    }
-    else
-    {
-        Elf32_Ehdr  hdr = *(Elf32_Ehdr *)filemap;
-
-        if (!check_ehdr_common(hdr.e_type, hdr.e_machine, hdr.e_version))
-            return print_error(path, "File format is not recognized");
-    }
+    if (file.elfclass == ELFCLASS32)
+        cast_32_to_64(&file);
 }

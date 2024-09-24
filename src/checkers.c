@@ -42,7 +42,7 @@ int     check_ehdr_common(uint16_t e_type,
                         uint32_t e_version)
 {
     if ((e_type > ET_CORE)
-        || (e_machine != EM_X86_64 || e_machine != EM_386)
+        || !(e_machine == EM_X86_64 || e_machine == EM_386)
         || e_version != EV_CURRENT
     )
         return (0);
