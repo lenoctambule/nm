@@ -12,11 +12,12 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     Elf64_Sym   *symbols = file->filemap + shdr->sh_offset;
     Elf64_Shdr  link = file->l_shdr64[shdr->sh_link];
     size_t      num = shdr->sh_size / sizeof(Elf64_Sym);
+    printf("Size %ld\n", shdr->sh_size);
     for (size_t i = 0; i < num; i++)
     {
         char *str = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
-        if (str != NULL && str[0] != 0)
-            printf("%s\n", str);
+        if (str != NULL)
+            printf("%016lx %s\n", symbols[i].st_value, str);
     }
     return 0;
 }
@@ -50,7 +51,10 @@ void    parse64(t_elf_file *file)
     }
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {
-        if (file->l_shdr64[i].sh_type == SHT_SYMTAB)
+        if (file->l_shdr64[i].sh_type == SHT_SYMTAB || file->l_shdr64[i].sh_type == SHT_DYNSYM)
+        {
+            printf("Parsing %ld\n", i);
             extract_symtab64(file, &file->l_shdr64[i]);
+        }
     }
 }
