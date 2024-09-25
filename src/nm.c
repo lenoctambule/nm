@@ -5,6 +5,7 @@ void    handle_path(char *path)
     t_elf_file  file;
 
     file.fd  = open(path, O_RDONLY);
+    file.path = path;
     if (file.fd == -1)
         return print_error(path, strerror(errno));
     if (fstat(file.fd, &file.s) == -1)

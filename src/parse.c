@@ -22,6 +22,13 @@ void    parse64(t_elf_file *file)
                         file->ehdr64.e_shentsize,
                         file->ehdr64.e_shnum,
                         file->ehdr64.e_shstrndx))
-        return print_error(file->path, "File format is not recognized");
+        return ;
     file->l_shdr64 = file->filemap + file->ehdr64.e_shoff;
+    for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
+    {
+        if (!check_shdr(file,
+                        file->l_shdr64[i].sh_offset,
+                        file->l_shdr64[i].sh_size))
+            return ;
+    }
 }
