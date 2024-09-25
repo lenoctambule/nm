@@ -4,7 +4,6 @@ INCS	= -I./libft -I./includes
 SRC_DIR = ./src
 SRC		+= $(addprefix $(SRC_DIR)/, \
 						main.c \
-						nm.c \
 						parse.c \
 						checkers.c \
 						utils.c \

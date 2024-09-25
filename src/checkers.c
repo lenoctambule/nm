@@ -71,7 +71,6 @@ int check_shdr(t_elf_file *file,
                 Elf64_Xword sh_size,
                 Elf64_Word  sh_link)
 {
-    (void) sh_type;
     if (!(sh_type <= SHT_NUM)
         && !(sh_type >= SHT_GNU_ATTRIBUTES && sh_type <= SHT_HIOS)
         && sh_type != SHT_LOOS
