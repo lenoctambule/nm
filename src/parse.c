@@ -27,8 +27,13 @@ void    parse64(t_elf_file *file)
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {
         if (!check_shdr(file,
+                        file->l_shdr64[i].sh_type,
                         file->l_shdr64[i].sh_offset,
-                        file->l_shdr64[i].sh_size))
+                        file->l_shdr64[i].sh_size,
+                        file->l_shdr64[i].sh_link))
             return ;
+    }
+    for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
+    {
     }
 }
