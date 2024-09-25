@@ -20,6 +20,8 @@ typedef struct s_file {
     int         elfclass;
     Elf64_Ehdr  ehdr64;
     Elf32_Ehdr  ehdr32;
+    Elf64_Shdr  *l_shdr64;
+    Elf32_Shdr  *l_shdr32;
 } t_file;
 
 void    parse32(t_file *file);
