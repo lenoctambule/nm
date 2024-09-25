@@ -47,6 +47,7 @@ int     check_shdr(t_elf_file *file,
                     Elf64_Xword sh_size,
                     Elf64_Word  sh_link);
 
+void    print_addr(size_t addr);
 void    print_error(char *file, char *message);
 char    *strid_to_str(char *strsec, size_t n, size_t limit);
 
