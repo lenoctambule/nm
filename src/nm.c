@@ -2,7 +2,7 @@
 
 void    handle_path(char *path)
 {
-    t_file  file;
+    t_elf_file  file;
 
     file.fd  = open(path, O_RDONLY);
     if (file.fd == -1)

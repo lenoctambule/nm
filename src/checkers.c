@@ -37,14 +37,30 @@ int     check_ehdr_ident(char *bytes, int *elfclass)
     return (1);
 }
 
-int     check_ehdr_common(uint16_t e_type,
+int     check_ehdr_body(t_elf_file *file,
+                        uint16_t e_type,
                         uint16_t e_machine,
-                        uint32_t e_version)
+                        uint32_t e_version,
+                        Elf64_Off	e_phoff,
+                        Elf64_Off	e_shoff,
+                        Elf64_Word	e_flags,
+                        Elf64_Half	e_ehsize,
+                        Elf64_Half	e_phentsize,
+                        Elf64_Half	e_phnum,
+                        Elf64_Half	e_shentsize,
+                        Elf64_Half	e_shnum,
+                        Elf64_Half	e_shstrndx)
 {
+    (void) e_flags; (void) e_ehsize;
     if ((e_type > ET_CORE)
         || !(e_machine == EM_X86_64 || e_machine == EM_386)
-        || e_version != EV_CURRENT
-    )
+        || e_version != EV_CURRENT)
+        return (0);
+    if (e_shoff + e_shentsize * e_shnum > (Elf64_Off)file->s.st_size)
+        return (0);
+    if (e_phoff + e_phentsize * e_phnum > (Elf64_Off)file->s.st_size)
+        return (0);
+    if (e_shstrndx > e_shnum)
         return (0);
     return (1);
 }
