@@ -1,5 +1,11 @@
 #include "nm.h"
 
+int     print_debug = 0;
+int     no_sort = 0;
+int     rev_sort = 0;
+int     external = 0;
+int     undefined = 0;
+
 void    handle_path(char *path)
 {
     t_elf_file  file;

@@ -1,10 +1,5 @@
 #include "nm.h"
 
-void    parse32(t_elf_file *file)
-{
-    (void) file;
-}
-
 static int  check_shndx(t_elf_file *file, Elf64_Section shndx) {
     return (shndx < file->ehdr64.e_shnum);
 }
