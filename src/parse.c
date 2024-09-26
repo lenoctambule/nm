@@ -5,18 +5,28 @@ void    parse32(t_elf_file *file)
     (void) file;
 }
 
+static int  check_shndx(t_elf_file *file, Elf64_Section shndx) {
+    return (shndx < file->ehdr64.e_shnum);
+}
+
 static char  is_relevant(t_elf_file *file, Elf64_Sym *symbol)
 {
     (void) file;
     char ret = '?';
     if (symbol->st_shndx == SHN_ABS)
         ret = 'a';
-    else if (file->l_shdr64[symbol->st_shndx].sh_type == SHT_NOBITS)
+    else if (check_shndx(file, symbol->st_shndx)
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NOBITS)
         ret = 'b';
     else if (symbol->st_shndx == SHN_COMMON)
         ret = 'c';
-    else if (file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS && file->l_shdr64[symbol->st_shndx].sh_flags & (SHF_ALLOC | SHF_WRITE))
+    else if (check_shndx(file, symbol->st_shndx)
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS
+        && file->l_shdr64[symbol->st_shndx].sh_flags & (SHF_ALLOC | SHF_WRITE))
         ret = 'd';
+    else if (check_shndx(file, symbol->st_shndx)
+        && file->l_shdr64[symbol->st_shndx].sh_type)
+        ret = 'g';
     if (ELF64_ST_VISIBILITY(symbol->st_info) == STB_GLOBAL)
         ret = ft_toupper(ret);
     return (ret);
@@ -36,7 +46,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
         char *str = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         if (str != NULL && str[0])
         {
-            // print_addr(symbols[i].st_value);
+            print_addr(symbols[i].st_value);
             ft_putchar_fd(' ', 1);
             ft_putchar_fd(type, 1);
             ft_putchar_fd(' ', 1);

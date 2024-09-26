@@ -16,7 +16,7 @@ void    print_addr(size_t addr)
     char    digits[] = "0123456789abcdef";
     for (size_t i = 0; i < sizeof(size_t) * 2; i++)
     {
-        str[16 - i] = digits[addr % 16];
+        str[15 - i] = digits[addr % 16];
         addr /= 16;
     }
     ft_putstr_fd(str, 1);
