@@ -69,12 +69,19 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     for (size_t i = 1; i < num; i++)
     {
         sym.class = get_symbol_class(file, &symbols[i]);
-        if (!sym.class || (sym.class == 'a' && !print_debug))
+        if (!sym.class
+            || (sym.class == 'a' && !print_debug))
+            continue;
+        if (external &&
+            !(ELF64_ST_BIND(symbols[i].st_info) == STB_GLOBAL
+            || ELF64_ST_BIND(symbols[i].st_info) == STB_WEAK))
             continue;
         sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
+        sym.value = symbols[i].st_value;
         if (sym.name != NULL || *sym.name == 0)
         {
-            print_sym(&sym, symbols[i].st_shndx);
+            if (no_sort)
+                print_sym(&sym, symbols[i].st_shndx);
         }
     }
     return 0;
