@@ -13,21 +13,40 @@ static char  is_relevant(t_elf_file *file, Elf64_Sym *symbol)
 {
     (void) file;
     char ret = '?';
+    if (ELF64_ST_BIND(symbol->st_info) == STB_WEAK)
+    {
+        if (ELF64_ST_TYPE(symbol->st_info) == STT_OBJECT)
+            ret = 'v';
+        else
+            ret = 'w';
+        if (symbol->st_shndx != SHN_UNDEF)
+            ret = ft_toupper(ret);
+        return ret;
+    }
+    if (ELF64_ST_BIND(symbol->st_info) == STB_GNU_UNIQUE)
+        return 'u';
+    if (symbol->st_shndx == SHN_UNDEF)
+        return 'U';
     if (symbol->st_shndx == SHN_ABS)
-        ret = 'a';
-    else if (check_shndx(file, symbol->st_shndx)
+        return 'A';
+    if (check_shndx(file, symbol->st_shndx)
         && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NOBITS)
         ret = 'b';
     else if (symbol->st_shndx == SHN_COMMON)
         ret = 'c';
     else if (check_shndx(file, symbol->st_shndx)
-        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS
-        && file->l_shdr64[symbol->st_shndx].sh_flags & (SHF_ALLOC | SHF_WRITE))
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NULL
+        && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
         ret = 'd';
     else if (check_shndx(file, symbol->st_shndx)
-        && file->l_shdr64[symbol->st_shndx].sh_type)
-        ret = 'g';
-    if (ELF64_ST_VISIBILITY(symbol->st_info) == STB_GLOBAL)
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NULL
+        && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+        ret = 'd';
+    else if (check_shndx(file, symbol->st_shndx)
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS
+        && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+        ret = 't';
+    if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
         ret = ft_toupper(ret);
     return (ret);
 }
