@@ -28,20 +28,24 @@ static char  is_relevant(t_elf_file *file, Elf64_Sym *symbol)
     if (symbol->st_shndx == SHN_UNDEF)
         return 'U';
     if (symbol->st_shndx == SHN_ABS)
-        return 'A';
-    if (check_shndx(file, symbol->st_shndx)
+        ret = 'a';
+    else if (check_shndx(file, symbol->st_shndx)
         && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NOBITS)
         ret = 'b';
     else if (symbol->st_shndx == SHN_COMMON)
         ret = 'c';
     else if (check_shndx(file, symbol->st_shndx)
-        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NULL
-        && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+        && (file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS
+        && (file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE) 
+            || (file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE | SHF_TLS)))))
         ret = 'd';
     else if (check_shndx(file, symbol->st_shndx)
-        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_NULL
-        && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_DYNAMIC)
         ret = 'd';
+    else if (check_shndx(file, symbol->st_shndx)
+        && file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS
+        && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC))
+        ret = 'r';
     else if (check_shndx(file, symbol->st_shndx)
         && file->l_shdr64[symbol->st_shndx].sh_type == SHT_PROGBITS
         && file->l_shdr64[symbol->st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
@@ -63,9 +67,12 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
         if (!type)
             continue;
         char *str = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
-        if (str != NULL && str[0])
+        if (str != NULL || *str == 0)
         {
-            print_addr(symbols[i].st_value);
+            if (symbols[i].st_shndx != SHN_UNDEF)
+                print_addr(symbols[i].st_value);
+            else
+                ft_putstr_fd("                ", 1);
             ft_putchar_fd(' ', 1);
             ft_putchar_fd(type, 1);
             ft_putchar_fd(' ', 1);
