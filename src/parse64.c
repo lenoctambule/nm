@@ -64,24 +64,17 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     Elf64_Sym   *symbols = file->filemap + shdr->sh_offset;
     Elf64_Shdr  link = file->l_shdr64[shdr->sh_link];
     size_t      num = shdr->sh_size / sizeof(Elf64_Sym);
+    t_symbol    sym;
 
     for (size_t i = 1; i < num; i++)
     {
-        char    type = get_symbol_class(file, &symbols[i]);
-        if (!type)
+        sym.class = get_symbol_class(file, &symbols[i]);
+        if (!sym.class || (sym.class == 'a' && !print_debug))
             continue;
-        char *str = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
-        if (str != NULL || *str == 0)
+        sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
+        if (sym.name != NULL || *sym.name == 0)
         {
-            if (symbols[i].st_shndx != SHN_UNDEF)
-                print_addr(symbols[i].st_value);
-            else
-                ft_putstr_fd("                ", 1);
-            ft_putchar_fd(' ', 1);
-            ft_putchar_fd(type, 1);
-            ft_putchar_fd(' ', 1);
-            ft_putstr_fd(str, 1);
-            ft_putchar_fd('\n', 1);
+            print_sym(&sym, symbols[i].st_shndx);
         }
     }
     return 0;

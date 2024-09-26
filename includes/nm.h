@@ -10,9 +10,20 @@
 # include <elf.h>
 # include <sys/mman.h>
 
-#
+extern int      print_debug;
+extern int      no_sort;
+extern int      rev_sort;
+extern int      external;
+extern int      undefined;
 
 typedef struct stat t_stat;
+
+typedef struct s_symbol
+{
+    size_t  value;
+    char    class;
+    char    *name;
+} t_symbol;
 
 typedef struct s_file {
     t_stat      s;
@@ -49,6 +60,8 @@ int     check_shdr(t_elf_file *file,
                     Elf64_Xword sh_size,
                     Elf64_Word  sh_link);
 
+int     check_options(int ac, char **av);
+void    print_sym(t_symbol *sym, Elf64_Section shndx);
 void    print_addr(size_t addr);
 void    print_error(char *file, char *message);
 char    *strid_to_str(char *strsec, size_t n, size_t limit);
