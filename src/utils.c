@@ -73,7 +73,14 @@ char    *strid_to_str(char *strsec, size_t n, size_t limit)
 {
     if (n > limit)
         return NULL;
-    return strsec + n;
+    if (strsec[n-1] != 0)
+        return NULL;
+    for (size_t i = 0; i < limit; i++)
+    {
+        if (*(strsec + n + i) == 0)
+            return strsec + n;
+    }
+    return NULL;
 }
 
 static int cmp(char *a, char *b)

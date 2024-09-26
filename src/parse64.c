@@ -81,7 +81,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
         sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         sym.value = symbols[i].st_value;
         sym.is_undefined = symbols[i].st_shndx == SHN_UNDEF;
-        if (sym.name != NULL || *sym.name == 0)
+        if (sym.name != NULL)
         {
             if (no_sort)
                 print_sym(&sym);
