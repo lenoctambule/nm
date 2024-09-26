@@ -23,6 +23,7 @@ typedef struct s_symbol
     size_t  value;
     char    class;
     char    *name;
+    int     is_undefined;
 } t_symbol;
 
 typedef struct s_file {
@@ -35,6 +36,8 @@ typedef struct s_file {
     Elf32_Ehdr  ehdr32;
     Elf64_Shdr  *l_shdr64;
     Elf32_Shdr  *l_shdr32;
+    t_symbol    *l_symbols;
+    size_t      symc;
 } t_elf_file;
 
 void    parse32(t_elf_file *file);
@@ -61,10 +64,11 @@ int     check_shdr(t_elf_file *file,
                     Elf64_Word  sh_link);
 
 int     check_options(int ac, char **av);
-void    print_sym(t_symbol *sym, Elf64_Section shndx);
+void    print_sym(t_symbol *sym);
 void    print_addr(size_t addr);
 void    print_error(char *file, char *message);
 char    *strid_to_str(char *strsec, size_t n, size_t limit);
+void    sort_symbols(t_elf_file *file);
 
 void    handle_path(char *path);
 

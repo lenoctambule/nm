@@ -76,15 +76,32 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
             !(ELF64_ST_BIND(symbols[i].st_info) == STB_GLOBAL
             || ELF64_ST_BIND(symbols[i].st_info) == STB_WEAK))
             continue;
+        if (undefined && (symbols[i].st_shndx != SHN_UNDEF))
+            continue;
         sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         sym.value = symbols[i].st_value;
+        sym.is_undefined = symbols[i].st_shndx == SHN_UNDEF;
         if (sym.name != NULL || *sym.name == 0)
         {
             if (no_sort)
-                print_sym(&sym, symbols[i].st_shndx);
+                print_sym(&sym);
+            else
+                file->l_symbols[file->symc++] = sym;
         }
     }
     return 0;
+}
+
+static int     count_symbols(t_elf_file *file)
+{
+    size_t  count = 0;
+
+    for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
+    {
+        if (file->l_shdr64[i].sh_type == SHT_SYMTAB)
+            count += file->l_shdr64[i].sh_size / sizeof(Elf64_Sym);
+    }
+    return count;
 }
 
 void    parse64(t_elf_file *file)
@@ -114,9 +131,21 @@ void    parse64(t_elf_file *file)
                         file->l_shdr64[i].sh_link))
             return ;
     }
+    if (!no_sort)
+    {
+        file->l_symbols = (t_symbol *)malloc(count_symbols(file) * sizeof(t_symbol));
+        if (file->l_symbols == NULL)
+            return ;
+    }
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {
         if (file->l_shdr64[i].sh_type == SHT_SYMTAB)
             extract_symtab64(file, &file->l_shdr64[i]);
+    }
+    if (!no_sort)
+    {
+        sort_symbols(file);
+        for (size_t i = 0; i < file->symc; i++)
+            print_sym(&file->l_symbols[i]);
     }
 }

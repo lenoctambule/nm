@@ -56,9 +56,9 @@ void    print_addr(size_t addr)
     ft_putstr_fd(str, 1);
 }
 
-void    print_sym(t_symbol *sym, Elf64_Section shndx)
+void    print_sym(t_symbol *sym)
 {
-    if (shndx != SHN_UNDEF)
+    if (!sym->is_undefined)
         print_addr(sym->value);
     else
         ft_putstr_fd("                ", 1);
@@ -74,4 +74,30 @@ char    *strid_to_str(char *strsec, size_t n, size_t limit)
     if (n > limit)
         return NULL;
     return strsec + n;
+}
+
+static int cmp(char *a, char *b)
+{
+    if (rev_sort)
+        return ft_strncmp(a, b, ft_strlen(a)) > 0;
+    else
+        return ft_strncmp(a, b, ft_strlen(a)) < 0;
+}
+
+void    sort_symbols(t_elf_file *file)
+{
+    t_symbol *symbols = file->l_symbols;
+
+    for (size_t i = file->symc - 1; i > 0; i--)
+    {
+        for (size_t j = 0; j < i; j++)
+        {
+            if (cmp(symbols[i].name, symbols[j].name))
+            {
+                t_symbol tmp = symbols[i];
+                symbols[i] = symbols[j];
+                symbols[j] = tmp;
+            }
+        }
+    }
 }
