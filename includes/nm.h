@@ -10,6 +10,8 @@
 # include <elf.h>
 # include <sys/mman.h>
 
+#
+
 typedef struct stat t_stat;
 
 typedef struct s_file {

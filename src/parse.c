@@ -69,6 +69,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     Elf64_Sym   *symbols = file->filemap + shdr->sh_offset;
     Elf64_Shdr  link = file->l_shdr64[shdr->sh_link];
     size_t      num = shdr->sh_size / sizeof(Elf64_Sym);
+
     for (size_t i = 1; i < num; i++)
     {
         char    type = get_symbol_class(file, &symbols[i]);
@@ -120,7 +121,7 @@ void    parse64(t_elf_file *file)
     }
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {
-        if (file->l_shdr64[i].sh_type == SHT_SYMTAB || file->l_shdr64[i].sh_type == SHT_DYNSYM)
+        if (file->l_shdr64[i].sh_type == SHT_SYMTAB)
             extract_symtab64(file, &file->l_shdr64[i]);
     }
 }
