@@ -78,7 +78,7 @@ int check_shdr(t_elf_file *file,
         && sh_type != SHT_HIPROC
         && sh_type != SHT_LOUSER
         && sh_type != SHT_HIUSER)
-            return print_error(file->path, "file format not recognized."),(0);
+        return print_error(file->path, "file format not recognized."),(0);
     if (sh_offset + sh_size > (Elf64_Off)file->s.st_size)
         return print_error(file->path, "file format not recognized."),(0);
     if (sh_link > file->ehdr64.e_shnum)
