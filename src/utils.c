@@ -1,5 +1,15 @@
 #include "nm.h"
 
+void    free_all(t_elf_file *file)
+{
+    free(file->l_symbols);
+    if (munmap(file->filemap, file->s.st_size) == -1)
+    {
+        print_error(file->path, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+}
+
 int check_options(int ac, char **av)
 {
     for (int i = 0; i < ac; i++)
@@ -95,6 +105,8 @@ void    sort_symbols(t_elf_file *file)
 {
     t_symbol *symbols = file->l_symbols;
 
+    if (file->symc == 0)
+        return ;
     for (size_t i = file->symc - 1; i > 0; i--)
     {
         for (size_t j = 0; j < i; j++)

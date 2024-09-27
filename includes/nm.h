@@ -63,6 +63,7 @@ int     check_shdr(t_elf_file *file,
                     Elf64_Xword sh_size,
                     Elf64_Word  sh_link);
 
+void    free_all(t_elf_file *file);
 int     check_options(int ac, char **av);
 void    print_sym(t_symbol *sym);
 void    print_addr(size_t addr);

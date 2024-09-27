@@ -1,20 +1,20 @@
 #include "nm.h"
 
-static int  check_shndx(t_elf_file *file, Elf64_Section shndx) {
+static int  check_shndx64(t_elf_file *file, Elf64_Section shndx) {
     return (shndx < file->ehdr64.e_shnum);
 }
 
-static int is_data(t_elf_file *file, Elf64_Sym *symbol)
+static int  is_data64(t_elf_file *file, Elf64_Sym *symbol)
 {
     return file->l_shdr64[symbol->st_shndx].sh_type != SHT_NOBITS
             && file->l_shdr64[symbol->st_shndx].sh_flags & SHF_ALLOC;;
 }
 
-static char  get_symbol_class(t_elf_file *file, Elf64_Sym *symbol)
+static char  get_symbol_class64(t_elf_file *file, Elf64_Sym *symbol)
 {
     (void) file;
     char    ret = '?';
-    int     valid_shndx = check_shndx(file, symbol->st_shndx);
+    int     valid_shndx = check_shndx64(file, symbol->st_shndx);
 
     if (ELF64_ST_BIND(symbol->st_info) == STB_WEAK)
     {
@@ -41,7 +41,7 @@ static char  get_symbol_class(t_elf_file *file, Elf64_Sym *symbol)
     else if (symbol->st_shndx == SHN_COMMON)
         ret = 'c';
     else if (valid_shndx
-        && is_data(file, symbol))
+        && is_data64(file, symbol))
     {
         if ((file->l_shdr64[symbol->st_shndx].sh_flags & (SHF_WRITE)) == 0)
             ret = 'r';
@@ -68,7 +68,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
 
     for (size_t i = 1; i < num; i++)
     {
-        sym.class = get_symbol_class(file, &symbols[i]);
+        sym.class = get_symbol_class64(file, &symbols[i]);
         if (!sym.class
             || (sym.class == 'a' && !print_debug))
             continue;
@@ -92,7 +92,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     return 0;
 }
 
-static int     count_symbols(t_elf_file *file)
+static int     count_symbols64(t_elf_file *file)
 {
     size_t  count = 0;
 
@@ -106,6 +106,8 @@ static int     count_symbols(t_elf_file *file)
 
 void    parse64(t_elf_file *file)
 {
+    size_t  symcount = 0;
+
     file->ehdr64 = *(Elf64_Ehdr *)file->filemap;
     if (!check_ehdr_body(file,
                         file->ehdr64.e_type,
@@ -131,11 +133,14 @@ void    parse64(t_elf_file *file)
                         file->l_shdr64[i].sh_link))
             return ;
     }
+    symcount = count_symbols64(file);
+    if (symcount == 0)
+        return print_error(file->path, "no symbols");
     if (!no_sort)
     {
-        file->l_symbols = (t_symbol *)malloc(count_symbols(file) * sizeof(t_symbol));
+        file->l_symbols = (t_symbol *)malloc(symcount * sizeof(t_symbol));
         if (file->l_symbols == NULL)
-            return ;
+            return print_error(file->path, strerror(errno));
     }
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {

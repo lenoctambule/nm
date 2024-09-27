@@ -31,6 +31,7 @@ void    handle_path(char *path)
         parse32(&file);
     else
         parse64(&file);
+    free_all(&file);
 }
 
 int main(int ac, char **av)
