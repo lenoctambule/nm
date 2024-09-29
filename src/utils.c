@@ -1,6 +1,6 @@
 #include "nm.h"
 
-void    free_all(t_elf_file *file)
+void        free_all(t_elf_file *file)
 {
     free(file->l_symbols);
     if (munmap(file->filemap, file->s.st_size) == -1)
@@ -10,7 +10,7 @@ void    free_all(t_elf_file *file)
     }
 }
 
-int check_options(int ac, char **av)
+int         check_options(int ac, char **av)
 {
     for (int i = 0; i < ac; i++)
     {
@@ -44,7 +44,7 @@ int check_options(int ac, char **av)
     return 0;
 }
 
-void    print_error(char *file, char *message)
+void        print_error(char *file, char *message)
 {
     (void) file; (void) message;
     ft_putstr_fd("'", 2);
@@ -54,7 +54,7 @@ void    print_error(char *file, char *message)
     ft_putstr_fd("\n", 2);
 }
 
-void    print_addr(size_t addr)
+void        print_addr(size_t addr)
 {
     char    str[] = "0000000000000000";
     char    digits[] = "0123456789abcdef";
@@ -66,7 +66,7 @@ void    print_addr(size_t addr)
     ft_putstr_fd(str, 1);
 }
 
-void    print_sym(t_symbol *sym)
+void        print_sym(t_symbol *sym)
 {
     if (!sym->is_undefined)
         print_addr(sym->value);
@@ -79,11 +79,11 @@ void    print_sym(t_symbol *sym)
     ft_putchar_fd('\n', 1);
 }
 
-char    *strid_to_str(char *strsec, size_t n, size_t limit)
+char        *strid_to_str(char *strsec, size_t n, size_t limit)
 {
     if (n > limit)
         return NULL;
-    for (size_t i = 0; i < limit; i++)
+    for (size_t i = 0; i < limit - n; i++)
     {
         if (*(strsec + n + i) == 0)
             return strsec + n;
@@ -91,7 +91,7 @@ char    *strid_to_str(char *strsec, size_t n, size_t limit)
     return NULL;
 }
 
-static int cmp(char *a, char *b)
+static int  cmp(char *a, char *b)
 {
     if (rev_sort)
         return ft_strncmp(a, b, ft_strlen(a)) > 0;
@@ -99,7 +99,7 @@ static int cmp(char *a, char *b)
         return ft_strncmp(a, b, ft_strlen(a)) < 0;
 }
 
-void    sort_symbols(t_elf_file *file)
+void        sort_symbols(t_elf_file *file)
 {
     t_symbol *symbols = file->l_symbols;
 
