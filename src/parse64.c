@@ -50,9 +50,6 @@ static char  get_symbol_class64(t_elf_file *file, Elf64_Sym *symbol)
         else
             ret = 'd';
     }
-    else if (valid_shndx
-        && file->l_shdr64[symbol->st_shndx].sh_flags & (SHF_IA_64_SHORT))
-        ret = 'g';
     if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
         ret = ft_toupper(ret);
     return (ret);
