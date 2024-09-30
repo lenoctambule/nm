@@ -81,7 +81,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
         if (sym.name != NULL && sym.name[0] != 0)
         {
             if (no_sort)
-                print_sym(&sym);
+                print_sym(file, &sym);
             else
                 file->l_symbols[file->symc++] = sym;
         }
@@ -148,6 +148,6 @@ void    parse64(t_elf_file *file)
     {
         sort_symbols(file);
         for (size_t i = 0; i < file->symc; i++)
-            print_sym(&file->l_symbols[i]);
+            print_sym(file, &file->l_symbols[i]);
     }
 }

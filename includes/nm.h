@@ -65,9 +65,9 @@ int     check_shdr(t_elf_file *file,
 
 void    free_all(t_elf_file *file);
 int     check_options(int ac, char **av);
-void    print_sym(t_symbol *sym);
-void    print_addr(size_t addr);
+void    print_addr(size_t addr, int elfclass);
 void    print_error(char *file, char *message);
+void    print_sym(t_elf_file *file, t_symbol *sym);
 char    *strid_to_str(char *strsec, size_t n, size_t limit);
 void    sort_symbols(t_elf_file *file);
 

@@ -54,11 +54,12 @@ void        print_error(char *file, char *message)
     ft_putstr_fd("\n", 2);
 }
 
-void        print_addr(size_t addr)
+void        print_addr(size_t addr, int elfclass)
 {
     char    str[] = "0000000000000000";
     char    digits[] = "0123456789abcdef";
-    for (size_t i = 0; i < sizeof(size_t) * 2; i++)
+    int     end = elfclass == ELFCLASS32 ? 4 : 8;
+    for (int i = 0; i < end * 2; i++)
     {
         str[15 - i] = digits[addr % 16];
         addr /= 16;
@@ -66,10 +67,10 @@ void        print_addr(size_t addr)
     ft_putstr_fd(str, 1);
 }
 
-void        print_sym(t_symbol *sym)
+void        print_sym(t_elf_file *file, t_symbol *sym)
 {
     if (!sym->is_undefined)
-        print_addr(sym->value);
+        print_addr(sym->value, file->elfclass);
     else
         ft_putstr_fd("                ", 1);
     ft_putchar_fd(' ', 1);
