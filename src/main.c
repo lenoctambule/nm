@@ -42,7 +42,7 @@ int main(int ac, char **av)
     int i = check_options(ac, av);
     if (i == -1)
         return ft_putstr_fd("Invalid option.\n", 1), EXIT_FAILURE;
-    if (i == 0)
+    if (i == ac)
         handle_path("a.out");
     else
         for (; i < ac; i++)
