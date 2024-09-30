@@ -61,9 +61,10 @@ void        print_addr(size_t addr, int elfclass)
     int     end = elfclass == ELFCLASS32 ? 4 : 8;
     for (int i = 0; i < end * 2; i++)
     {
-        str[15 - i] = digits[addr % 16];
+        str[end * 2 - 1 - i] = digits[addr % 16];
         addr /= 16;
     }
+    str[end * 2] = 0;
     ft_putstr_fd(str, 1);
 }
 
