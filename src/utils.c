@@ -72,8 +72,10 @@ void        print_sym(t_elf_file *file, t_symbol *sym)
 {
     if (!sym->is_undefined)
         print_addr(sym->value, file->elfclass);
-    else
+    else if (file->elfclass == ELFCLASS64)
         ft_putstr_fd("                ", 1);
+    else
+        ft_putstr_fd("        ", 1);
     ft_putchar_fd(' ', 1);
     ft_putchar_fd(sym->class, 1);
     ft_putchar_fd(' ', 1);
