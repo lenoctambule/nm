@@ -53,5 +53,5 @@ dkms.conf
 
 nm
 .vscode
-libft
 .nfs*
+ft_nm
