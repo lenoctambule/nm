@@ -102,10 +102,11 @@ char        *strid_to_str(char *strsec, size_t n, size_t limit)
 
 static int  cmp(char *a, char *b)
 {
+    int max = ft_strlen(a) > ft_strlen(b) ? ft_strlen(a) : ft_strlen(b);
     if (rev_sort)
-        return ft_strncmp(a, b, ft_strlen(a)) > 0;
+        return ft_strncmp(a, b, max) > 0;
     else
-        return ft_strncmp(a, b, ft_strlen(a)) <= 0;
+        return ft_strncmp(a, b, max) < 0;
 }
 
 void        sort_symbols(t_elf_file *file)
