@@ -9,7 +9,6 @@ int     undefined = 0;
 void    handle_path(char *path)
 {
     t_elf_file  file;
-
     ft_memset(&file, 0, sizeof(t_elf_file));
     file.fd  = open(path, O_RDONLY);
     file.path = path;
@@ -27,6 +26,9 @@ void    handle_path(char *path)
         return print_error(path, strerror(errno));
     if (!check_ehdr_ident(file.filemap, &file.elfclass))
         return print_error(path, "File format is not recognized");
+    ft_putstr_fd("\n", 1);
+    ft_putstr_fd(path, 1);
+    ft_putstr_fd(" :\n", 1);
     if (file.elfclass == ELFCLASS32)
         parse32(&file);
     else
@@ -42,7 +44,7 @@ int main(int ac, char **av)
     int i = check_options(ac, av);
     if (i == -1)
         return ft_putstr_fd("Invalid option.\n", 1), EXIT_FAILURE;
-    if (i == ac)
+    if (i == ac - 1)
         handle_path("a.out");
     else
         for (; i < ac; i++)
