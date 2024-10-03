@@ -12,10 +12,15 @@ void        free_all(t_elf_file *file)
 
 int         check_options(int ac, char **av)
 {
+    int argcount = 0;
+
     for (int i = 0; i < ac; i++)
     {
         if (av[i][0] != '-')
-            return i;
+        {
+            argcount++;
+            continue ;
+        }
         for (int j = 1; av[i][j]; j++)
         {
             switch (av[i][j])
@@ -41,7 +46,7 @@ int         check_options(int ac, char **av)
             }
         }
     }
-    return 0;
+    return argcount;
 }
 
 void        print_error(char *file, char *message)

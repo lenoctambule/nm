@@ -41,13 +41,18 @@ int main(int ac, char **av)
 {
     ac--; av++;
 
-    int i = check_options(ac, av);
-    if (i == -1)
+    int acount = check_options(ac, av);
+    if (acount == -1)
         return ft_putstr_fd("Invalid option.\n", 1), EXIT_FAILURE;
-    if (i == ac - 1)
+    if (acount == 0)
         handle_path("a.out");
     else
-        for (; i < ac; i++)
-            handle_path(av[i]);
+    {
+        for (int i = 0; i < ac; i++)
+        {
+            if (av[i][0] != '-')
+                handle_path(av[i]);
+        }
+    }
     return EXIT_SUCCESS;
 }
