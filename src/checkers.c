@@ -71,7 +71,7 @@ int check_shdr(t_elf_file *file,
                 Elf64_Xword sh_size,
                 Elf64_Word  sh_link)
 {
-    (void) sh_link;
+    (void) sh_link, (void) sh_offset, (void) sh_size;
     if (!(sh_type <= SHT_NUM)
         && !(sh_type >= SHT_GNU_ATTRIBUTES && sh_type <= SHT_HIOS)
         && sh_type != SHT_LOOS
@@ -79,8 +79,6 @@ int check_shdr(t_elf_file *file,
         && sh_type != SHT_HIPROC
         && sh_type != SHT_LOUSER
         && sh_type != SHT_HIUSER)
-        return print_error(file->path, "file format not recognized."),(0);
-    if (sh_offset + sh_size > (Elf64_Off)file->s.st_size)
         return print_error(file->path, "file format not recognized."),(0);
     return (1);
 }

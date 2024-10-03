@@ -89,13 +89,19 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     return 0;
 }
 
-static int     count_symbols64(t_elf_file *file)
+static int      check_offset64(t_elf_file *file, int i)
+{
+    return file->l_shdr64[i].sh_offset + file->l_shdr64[i].sh_size >= (Elf64_Off)file->s.st_size;
+}
+
+static int      count_symbols64(t_elf_file *file)
 {
     size_t  count = 0;
 
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {
-        if (file->l_shdr64[i].sh_type == SHT_SYMTAB)
+        if (file->l_shdr64[i].sh_type == SHT_SYMTAB
+            && !check_offset64(file, i))
             count += file->l_shdr64[i].sh_size / sizeof(Elf64_Sym);
     }
     return count;
@@ -139,9 +145,11 @@ void    parse64(t_elf_file *file)
         if (file->l_symbols == NULL)
             return print_error(file->path, strerror(errno));
     }
+    ft_memset(file->l_symbols, 0, symcount * sizeof(t_symbol));
     for (size_t i = 0; i < file->ehdr64.e_shnum; i++)
     {
-        if (file->l_shdr64[i].sh_type == SHT_SYMTAB)
+        if (file->l_shdr64[i].sh_type == SHT_SYMTAB
+            && !check_offset64(file, i))
             extract_symtab64(file, &file->l_shdr64[i]);
     }
     if (!no_sort)

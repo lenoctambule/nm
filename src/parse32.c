@@ -1,5 +1,3 @@
-# include "nm.h"
-
 #include "nm.h"
 
 static int  check_shndx32(t_elf_file *file, Elf32_Section shndx) {
@@ -80,7 +78,7 @@ int     extract_symtab32(t_elf_file *file, Elf32_Shdr *shdr)
         sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         sym.value = symbols[i].st_value;
         sym.is_undefined = symbols[i].st_shndx == SHN_UNDEF;
-        if (sym.name != NULL)
+        if (sym.name != NULL && sym.name[0] != 0)
         {
             if (no_sort)
                 print_sym(file, &sym);
@@ -91,13 +89,19 @@ int     extract_symtab32(t_elf_file *file, Elf32_Shdr *shdr)
     return 0;
 }
 
-static int     count_symbols32(t_elf_file *file)
+static int      check_offset32(t_elf_file *file, int i)
+{
+    return file->l_shdr32[i].sh_offset + file->l_shdr32[i].sh_size >= (Elf32_Off)file->s.st_size;
+}
+
+static int      count_symbols32(t_elf_file *file)
 {
     size_t  count = 0;
 
     for (size_t i = 0; i < file->ehdr32.e_shnum; i++)
     {
-        if (file->l_shdr32[i].sh_type == SHT_SYMTAB)
+        if (file->l_shdr32[i].sh_type == SHT_SYMTAB
+            && !check_offset32(file, i))
             count += file->l_shdr32[i].sh_size / sizeof(Elf32_Sym);
     }
     return count;
@@ -141,9 +145,11 @@ void    parse32(t_elf_file *file)
         if (file->l_symbols == NULL)
             return print_error(file->path, strerror(errno));
     }
+    ft_memset(file->l_symbols, 0, symcount * sizeof(t_symbol));
     for (size_t i = 0; i < file->ehdr32.e_shnum; i++)
     {
-        if (file->l_shdr32[i].sh_type == SHT_SYMTAB)
+        if (file->l_shdr32[i].sh_type == SHT_SYMTAB
+            && !check_offset32(file, i))
             extract_symtab32(file, &file->l_shdr32[i]);
     }
     if (!no_sort)
