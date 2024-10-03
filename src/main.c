@@ -28,7 +28,7 @@ void    handle_path(char *path)
         return print_error(path, "File format is not recognized");
     ft_putstr_fd("\n", 1);
     ft_putstr_fd(path, 1);
-    ft_putstr_fd(" :\n", 1);
+    ft_putstr_fd(":\n", 1);
     if (file.elfclass == ELFCLASS32)
         parse32(&file);
     else
