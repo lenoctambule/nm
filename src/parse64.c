@@ -60,6 +60,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     (void) file; (void) shdr;
     Elf64_Sym   *symbols = file->filemap + shdr->sh_offset;
     Elf64_Shdr  link = file->l_shdr64[shdr->sh_link];
+    Elf64_Shdr  shstrhdr = file->l_shdr64[file->ehdr64.e_shstrndx];
     size_t      num = shdr->sh_size / sizeof(Elf64_Sym);
     t_symbol    sym;
 
@@ -75,10 +76,13 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
             continue;
         if (undefined && (symbols[i].st_shndx != SHN_UNDEF))
             continue;
-        sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
+        if (ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION)
+            sym.name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr64[symbols[i].st_shndx].sh_name, shstrhdr.sh_offset);
+        else
+            sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         sym.value = symbols[i].st_value;
         sym.is_undefined = symbols[i].st_shndx == SHN_UNDEF;
-        if (sym.name != NULL && sym.name[0] != 0)
+        if (sym.name != NULL)
         {
             if (no_sort)
                 print_sym(file, &sym);
