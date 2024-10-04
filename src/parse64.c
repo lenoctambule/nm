@@ -68,7 +68,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     {
         sym.class = get_symbol_class64(file, &symbols[i]);
         if (!sym.class
-            || (sym.class == 'a' && !print_debug))
+            || ((sym.class == 'a' || ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION) && !print_debug))
             continue;
         if (external &&
             !(ELF64_ST_BIND(symbols[i].st_info) == STB_GLOBAL
