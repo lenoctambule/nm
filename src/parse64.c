@@ -77,7 +77,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
         if (undefined && (symbols[i].st_shndx != SHN_UNDEF))
             continue;
         if (ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION)
-            sym.name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr64[symbols[i].st_shndx].sh_name, shstrhdr.sh_offset);
+            sym.name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr64[symbols[i].st_shndx].sh_name, shstrhdr.sh_size);
         else
             sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         sym.value = symbols[i].st_value;
