@@ -51,7 +51,7 @@ static char  get_symbol_class32(t_elf_file *file, Elf32_Sym *symbol)
         else
             ret = 'd';
     }
-        if (valid_shndx && !(file->l_shdr32[symbol->st_shndx].sh_flags & SHF_ALLOC) && (ELF32_ST_TYPE(symbol->st_info) == STT_SECTION))
+    if (valid_shndx && !(file->l_shdr32[symbol->st_shndx].sh_flags & SHF_ALLOC) && (ELF32_ST_TYPE(symbol->st_info) == STT_SECTION))
     {
         char    *name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr32[symbol->st_shndx].sh_name, shstrhdr.sh_size);
         if (name != NULL)
@@ -79,6 +79,7 @@ int     extract_symtab32(t_elf_file *file, Elf32_Shdr *shdr)
     (void) file; (void) shdr;
     Elf32_Sym   *symbols = file->filemap + shdr->sh_offset;
     Elf32_Shdr  link = file->l_shdr32[shdr->sh_link];
+    Elf32_Shdr  shstrhdr = file->l_shdr32[file->ehdr32.e_shstrndx];
     size_t      num = shdr->sh_size / sizeof(Elf32_Sym);
     t_symbol    sym;
 
@@ -86,7 +87,7 @@ int     extract_symtab32(t_elf_file *file, Elf32_Shdr *shdr)
     {
         sym.class = get_symbol_class32(file, &symbols[i]);
         if (!sym.class
-            || (sym.class == 'a' && !print_debug))
+            || ((sym.class == 'a' || ELF32_ST_TYPE(symbols[i].st_info) == STT_SECTION) && !print_debug))
             continue;
         if (external &&
             !(ELF32_ST_BIND(symbols[i].st_info) == STB_GLOBAL
@@ -94,10 +95,13 @@ int     extract_symtab32(t_elf_file *file, Elf32_Shdr *shdr)
             continue;
         if (undefined && (symbols[i].st_shndx != SHN_UNDEF))
             continue;
-        sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
+        if (ELF32_ST_TYPE(symbols[i].st_info) == STT_SECTION)
+            sym.name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr32[symbols[i].st_shndx].sh_name, shstrhdr.sh_size);
+        else
+            sym.name = strid_to_str(file->filemap + link.sh_offset, symbols[i].st_name, link.sh_size);
         sym.value = symbols[i].st_value;
         sym.is_undefined = symbols[i].st_shndx == SHN_UNDEF;
-        if (sym.name != NULL && sym.name[0] != 0)
+        if (sym.name != NULL)
         {
             if (no_sort)
                 print_sym(file, &sym);
