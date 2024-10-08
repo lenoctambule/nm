@@ -15,6 +15,7 @@ static char  get_symbol_class64(t_elf_file *file, Elf64_Sym *symbol)
     (void) file;
     char    ret = '?';
     int     valid_shndx = check_shndx64(file, symbol->st_shndx);
+    Elf64_Shdr  shstrhdr = file->l_shdr64[file->ehdr64.e_shstrndx];
 
     if (ELF64_ST_BIND(symbol->st_info) == STB_WEAK)
     {
@@ -50,6 +51,24 @@ static char  get_symbol_class64(t_elf_file *file, Elf64_Sym *symbol)
         else
             ret = 'd';
     }
+    if (valid_shndx && !(file->l_shdr64[symbol->st_shndx].sh_flags & SHF_ALLOC) && (ELF64_ST_TYPE(symbol->st_info) == STT_SECTION))
+    {
+        char    *name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr64[symbol->st_shndx].sh_name, shstrhdr.sh_size);
+        if (name != NULL)
+        {
+            int     n = ft_strlen(name);
+            char    *db_name[] = {".debug", ".line", ".stab", ".zdebug", NULL};
+
+            for (int i = 0; db_name[i] != NULL; i++)
+            {
+                if (ft_strnstr(name, db_name[i], n) == name)
+                    return 'N';
+            }
+        }
+    }
+    if (ret == '?' && valid_shndx && ELF64_ST_TYPE(symbol->st_info) != SHT_NOBITS
+        && !(file->l_shdr64[symbol->st_shndx].sh_flags & SHF_WRITE))
+        return 'n';
     if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
         ret = ft_toupper(ret);
     return (ret);

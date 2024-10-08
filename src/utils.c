@@ -104,9 +104,9 @@ static int  cmp(char *a, char *b)
 {
     int max = ft_strlen(a) > ft_strlen(b) ? ft_strlen(a) : ft_strlen(b);
     if (rev_sort)
-        return ft_strncmp(a, b, max) > 0;
+        return -ft_strncmp(a, b, max);
     else
-        return ft_strncmp(a, b, max) < 0;
+        return ft_strncmp(a, b, max);
 }
 
 void        sort_symbols(t_elf_file *file)
@@ -119,7 +119,14 @@ void        sort_symbols(t_elf_file *file)
     {
         for (size_t j = 0; j < i; j++)
         {
-            if (cmp(symbols[i].name, symbols[j].name))
+            int res = cmp(symbols[i].name, symbols[j].name);
+            if (res < 0)
+            {
+                t_symbol tmp = symbols[i];
+                symbols[i] = symbols[j];
+                symbols[j] = tmp;
+            }
+            else if (res == 0 && symbols[i].value < symbols[j].value)
             {
                 t_symbol tmp = symbols[i];
                 symbols[i] = symbols[j];
