@@ -87,13 +87,17 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
     {
         sym.class = get_symbol_class64(file, &symbols[i]);
         if (!sym.class
-            || ((sym.class == 'a' || ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION) && !print_debug))
-            continue;
-        if (external &&
-            !(ELF64_ST_BIND(symbols[i].st_info) == STB_GLOBAL
-            || ELF64_ST_BIND(symbols[i].st_info) == STB_WEAK))
+            || ((sym.class == 'a' || sym.class == 'N' || ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION) && !print_debug))
             continue;
         if (undefined && (symbols[i].st_shndx != SHN_UNDEF))
+            continue;
+        if (external &&
+            ((ELF64_ST_BIND(symbols[i].st_info) != STB_GLOBAL
+            && ELF64_ST_BIND(symbols[i].st_info) != STB_WEAK
+            && ELF64_ST_BIND(symbols[i].st_info) != STB_GNU_UNIQUE
+            && symbols[i].st_shndx != SHN_COMMON
+            && file->l_shdr64[symbols[i].st_shndx].sh_type != STT_COMMON)
+            && symbols[i].st_shndx != SHN_UNDEF))
             continue;
         if (ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION)
             sym.name = strid_to_str(file->filemap + shstrhdr.sh_offset, file->l_shdr64[symbols[i].st_shndx].sh_name, shstrhdr.sh_size);
