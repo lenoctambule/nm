@@ -96,7 +96,7 @@ int     extract_symtab64(t_elf_file *file, Elf64_Shdr *shdr)
             && ELF64_ST_BIND(symbols[i].st_info) != STB_WEAK
             && ELF64_ST_BIND(symbols[i].st_info) != STB_GNU_UNIQUE
             && symbols[i].st_shndx != SHN_COMMON
-            && file->l_shdr64[symbols[i].st_shndx].sh_type != STT_COMMON)
+            && check_shndx64(file, symbols[i].st_shndx) && file->l_shdr64[symbols[i].st_shndx].sh_type != STT_COMMON)
             && symbols[i].st_shndx != SHN_UNDEF))
             continue;
         if (ELF64_ST_TYPE(symbols[i].st_info) == STT_SECTION)

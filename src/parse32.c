@@ -96,7 +96,7 @@ int     extract_symtab32(t_elf_file *file, Elf32_Shdr *shdr)
             && ELF32_ST_BIND(symbols[i].st_info) != STB_WEAK
             && ELF32_ST_BIND(symbols[i].st_info) != STB_GNU_UNIQUE
             && symbols[i].st_shndx != SHN_COMMON
-            && file->l_shdr32[symbols[i].st_shndx].sh_type != STT_COMMON)
+            && check_shndx32(file, symbols[i].st_shndx) && file->l_shdr32[symbols[i].st_shndx].sh_type != STT_COMMON)
             && symbols[i].st_shndx != SHN_UNDEF))
             continue;
         if (ELF32_ST_TYPE(symbols[i].st_info) == STT_SECTION)

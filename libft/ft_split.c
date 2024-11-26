@@ -56,7 +56,7 @@ static char	**ft_freesplit(char **res, int j)
 {
 	while (j > 0)
 	{
-		free(res + j);
+		free(res[j]);
 		j--;
 	}
 	return ((char **) NULL);
